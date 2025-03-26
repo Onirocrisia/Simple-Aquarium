@@ -1,6 +1,6 @@
 # Aquarium Simulator 🐠
 
-![Aquarium Preview](src/assets/images/aquarium-screenshot.png)
+![Aquarium Preview](https://i.imgur.com/VyE301n.png)
 
 An interactive physics-based aquarium experience with procedurally generated graphics and sound. Built with HTML5 Canvas and Matter.js.
 
