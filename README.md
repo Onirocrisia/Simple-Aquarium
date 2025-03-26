@@ -1,39 +1,53 @@
-# Aquarium Game 🐠
+# Aquarium Simulator 🐠
 
-![Aquarium Screenshot](src/assets/images/aquarium-screenshot.png)
+![Aquarium Preview](src/assets/images/aquarium-screenshot.png)
 
-A relaxing interactive aquarium simulation built with HTML5 Canvas and Matter.js physics engine. Watch fish swim naturally, interact with them, and customize the environment with various controls.
+An interactive physics-based aquarium experience with procedurally generated graphics and sound. Built with HTML5 Canvas and Matter.js.
 
-## Key Features ✨
+## Features ✨
 
-- **100% Programmatically Generated**: All graphics and sounds are rendered in real-time using Web APIs
-- **No External Assets**: Everything is created using code - no pre-made images or sound files
-- **Realistic Fish Behavior**: Fish swim using AI algorithms with separation, alignment, and cohesion
-- **Interactive Physics**: Click to create ripples that affect fish movement
-- **Customizable Environment**:
-  - Adjust fish count and swim force
-  - Modify water density and friction
-  - Toggle AI behavior and visual effects
-- **Retro Aesthetic**: CRT and scanline effects for a nostalgic look
-- **Audio Controls**:
-  - Background music with volume control
-  - Sound effects for interactions
-- **Responsive Design**: Works on both desktop and mobile devices
+### 🌊 Core Experience
+- Real-time aquatic ecosystem simulation
+- Interactive physics engine with buoyancy and fluid dynamics
+- Dynamic fish AI with swarm behavior (separation/alignment/cohesion)
+- Click/touch-driven water ripple effects
 
-## Technical Highlights 💻
+### 🎨 Procedural Generation
+- Unique fish designs with random color patterns
+- Dynamic fin animations and movement physics
+- Real-time CRT and scanline visual effects
+- Algorithmic background music generation
 
-### Graphics
-- **Canvas Rendering**: All visual elements rendered using HTML5 Canvas API
-- **Procedural Generation**:
-  - Fish bodies and animations
-  - Water ripples and effects
-  - Algae and rock formations
-  - CRT and scanline effects
-- **High DPI Support**: Crisp rendering on high-resolution displays
+### 🕹️ Interactive Controls
+- Adjustable water properties (density, friction)
+- Real-time fish spawning/behavior modification
+- Audio controls for background music/SFX
+- Visual toggles for CRT/ripple effects
 
-### Audio
-- **Web Audio API**: All sounds generated using oscillators and effects
-- **Dynamic Music**: Procedurally generated background music
-- **Interactive SFX**: Sound effects respond to user interactions
+## Getting Started
 
-## Project Structure 🗂️ 
+1. Clone repo
+2. Open `index.html` in modern browser
+3. Use control panel to customize experience
+
+```html
+<!-- Basic Implementation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+```
+
+## Technical Implementation 🔧
+
+| Aspect          | Technologies Used              |
+|-----------------|---------------------------------|
+| Physics Engine  | Matter.js rigid body dynamics  |
+| Rendering       | Canvas 2D context              |
+| Audio           | Web Audio API synthesis        |
+| UI              | CSS Grid + Flexbox             |
+
+**Key Optimization Techniques**:
+- Spatial partitioning for fish interactions
+- Object pooling for ripple effects
+- Web Workers for audio processing
+- RequestAnimationFrame-based rendering
+
+License: [MIT](LICENSE) 
