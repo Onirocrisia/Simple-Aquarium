@@ -1,4 +1,4 @@
-# Aquarium Simulator 🐠
+# Simple Aquarium (Under Construction) 🐠
 
 ![Aquarium Preview](https://i.imgur.com/VyE301n.png)
 
