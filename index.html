@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aquarium Game</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐠</text></svg>">
+    <style>
+        body {
+            background: #2a2a2a radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .retro-emulator {
+            background: #3a3a3a;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5),
+                        inset 0 0 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .retro-emulator::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 30px;
+            background: linear-gradient(145deg, 
+                #4a4a4a 0%, 
+                #2a2a2a 20%,
+                #1a1a1a 50%,
+                #2a2a2a 80%,
+                #4a4a4a 100%);
+            z-index: -1;
+        }
+
+        #stage {
+            border: 4px solid #1a1a1a;
+            border-radius: 8px;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.5),
+                        0 0 20px rgba(0,0,0,0.3);
+        }
+
+        /* CRT screen effect */
+        #stage::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0.1) 50%, 
+                        rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        /* Vignette effect */
+        #stage::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, 
+                        rgba(0,0,0,0) 60%, 
+                        rgba(0,0,0,0.5) 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+        #stage {
+            position: fixed;
+            width: 1280px;
+            height: 720px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000;
+            overflow: hidden;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: auto;
+            touch-action: none;
+        }
+        #background-layer {
+            z-index: 1;
+        }
+        #game-layer {
+            z-index: 2;
+        }
+        #effects-layer {
+            z-index: 3;
+        }
+
+        .retro-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 300px;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 100;
+            backdrop-filter: blur(2px);
+            border: 1px solid #00ff0055;
+        }
+
+        /* Collapsible sections */
+        details.control-group {
+            background: rgba(42, 42, 42, 0.9);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        details.control-group[open] {
+            background: rgba(30, 30, 30, 0.95);
+        }
+
+        summary.control-header {
+            padding: 8px;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        summary.control-header::-webkit-details-marker {
+            display: none;
+        }
+
+        .control-subgroup {
+            padding: 8px;
+            border-top: 1px solid rgba(0, 255, 0, 0.1);
+        }
+
+        summary.subheader {
+            color: #00ff00;
+            font-family: monospace;
+            padding: 4px 8px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        summary.subheader:hover {
+            opacity: 1;
+        }
+
+        /* Compact layout adjustments */
+        .control-row {
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .retro-slider {
+            flex-grow: 1;
+            min-width: 120px;
+        }
+
+        .volume-percentage {
+            min-width: 35px;
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group:not(:last-child) {
+            margin-bottom: 10px;
+        }
+
+        .control-header {
+            color: #00ff00;
+            font-family: monospace;
+            text-shadow: 0 0 5px #00ff00;
+            margin-bottom: 8px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .retro-input {
+            background: #1a1a1a;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 4px;
+            width: 60px;
+            font-family: monospace;
+        }
+
+        .retro-btn {
+            background: #2a2a2a;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .retro-btn:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 10px #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="retro-emulator">
+        <div id="stage" role="application" aria-label="Interactive Aquarium">
+            <canvas id="background-layer" aria-hidden="true"></canvas>
+            <canvas id="game-layer" aria-label="Main game content"></canvas>
+            <canvas id="effects-layer" aria-hidden="true"></canvas>
+        </div>
+    </div>
+    <div class="retro-controls">
+        <details class="control-group" open>
+            <summary class="control-header">⚙️ CONTROLS</summary>
+            <!-- Music Controls -->
+            <div class="control-subgroup">
+                <div class="control-row">
+                    <button id="music-toggle" class="retro-btn">▶</button>
+                    <input type="range" id="music-volume" class="retro-slider" min="0" max="1" step="0.1" value="0.5">
+                    <span id="music-percentage" class="volume-percentage">50%</span>
+                </div>
+            </div>
+
+            <!-- SFX Controls -->
+            <div class="control-subgroup">
+                <div class="control-row">
+                    <button id="sfx-mute" class="retro-btn">🔊</button>
+                    <input type="range" id="sfx-volume" class="retro-slider" min="0" max="1" step="0.1" value="0.7">
+                    <span id="sfx-percentage" class="volume-percentage">70%</span>
+                </div>
+            </div>
+
+            <!-- Fish Controls (collapsed by default) -->
+            <details class="control-subgroup">
+                <summary class="subheader">🐟 Fish</summary>
+                <div class="control-row">
+                    <input type="number" id="fish-count" min="1" max="20" value="1" class="retro-input">
+                    <button id="spawn-fish" class="retro-btn">SPAWN</button>
+                </div>
+                <div class="control-row">
+                    <label>Swim Force:</label>
+                    <input type="range" id="swim-force" class="retro-slider" min="0.01" max="0.05" step="0.005" value="0.02">
+                </div>
+            </details>
+
+            <!-- Physics Controls (collapsed by default) -->
+            <details class="control-subgroup">
+                <summary class="subheader">⚛️ Physics</summary>
+                <div class="control-row">
+                    <label>Density:</label>
+                    <input type="range" id="water-density" class="retro-slider" min="0.001" max="0.01" step="0.001" value="0.003">
+                </div>
+                <div class="control-row">
+                    <label>Friction:</label>
+                    <input type="range" id="friction" class="retro-slider" min="0.001" max="0.1" step="0.001" value="0.02">
+                </div>
+            </details>
+
+            <!-- AI/Visual Controls (collapsed by default) -->
+            <details class="control-subgroup">
+                <summary class="subheader">🎮 Game</summary>
+                <div class="control-row">
+                    <button id="toggle-ai" class="retro-btn">AUTO SWIM ✅</button>
+                    <input type="range" id="ai-frequency" class="retro-slider" min="0.1" max="1.0" step="0.1" value="0.5">
+                </div>
+                <div class="control-row">
+                    <button id="toggle-ripples" class="retro-btn">RIPPLES ✅</button>
+                    <button id="toggle-crt" class="retro-btn">CRT ✅</button>
+                </div>
+            </details>
+        </details>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+    <script src="aquarium.js"></script>
+</body>
+</html> 
